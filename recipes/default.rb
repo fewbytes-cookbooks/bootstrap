@@ -5,18 +5,18 @@ if node['cloudformation']
   if node["cloudformation"]["metadata"]["chef"]["serverURL"]
     # Chef client mode
     node.default["chef_client"]["server_url"] = node["cloudformation"]["metadata"]["chef"]["serverURL"]
-    environment = node.default["chef_client"]["environment"] = node["cloudformation"]["chef"]["metadata"]["environment"]
-    domain = node["cloudformation"]["chef"]["metadata"]["generic"]["domain"]
+    node.default["chef_client"]["environment"] = node["cloudformation"]["metadata"]["chef"]["environment"]
+    domain = node["cloudformation"]["metadata"]["generic"]["domain"]
   else
     # not implemented yet
 
   end
-  conf = node["cloudformation"]["chef"]["metadata"]["chef"]
+  conf = node["cloudformation"]["metadata"]["chef"]
   # normal instance bootstrap
 end
 
-new_hostname = "#{role}-#{node["ec2"]["instance_id"]}"
-new_fqdn = "#{environment.tr("_", "-").downcase}.#{domain}"
+new_hostname = "#{conf["role"]}-#{node["ec2"]["instance_id"]}"
+new_fqdn = "#{conf["environment"].tr("_", "-").downcase}.#{domain}"
 
 file "/etc/hostname" do
   mode "0644"
