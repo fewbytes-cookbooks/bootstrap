@@ -35,7 +35,7 @@ hostsfile_entry node["ec2"]["local_ipv4"] do
   comment 'Append by bootstrap recipe'
 end
 
-include_recipe "chef-client"
+include_recipe "chef-client::config"
 
 file "/etc/chef/validation.pem" do
   mode "0600"
