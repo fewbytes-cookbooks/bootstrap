@@ -15,7 +15,7 @@ if node.attribute? 'cloudformation'
   # normal instance bootstrap
 end
 
-new_hostname = "#{conf["role"]}-#{node["ec2"]["instance_id"]}"
+new_hostname = "#{conf["role"].tr("_", "-")}-#{node["ec2"]["instance_id"]}"
 new_fqdn = "#{new_hostname}.#{conf["environment"].tr("_", "-").downcase}.#{domain}"
 
 file "/etc/hostname" do
