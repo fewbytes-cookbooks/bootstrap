@@ -45,4 +45,4 @@ file "/etc/chef/first-boot.json" do
   mode "0644"
   content Hash["run_list" => conf["run_list"] || ["role[#{conf["role"]}]"]].to_json
 end
-execute "chef-client -j /etc/chef/first-boot.json" 
+execute "chef-client -j /etc/chef/first-boot.json | tee -a /var/log/chef/client.log | logger -t chef-client" 
