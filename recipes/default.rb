@@ -36,6 +36,11 @@ hostsfile_entry node["ec2"]["local_ipv4"] do
 end
 
 include_recipe "chef-client"
+
+file "/etc/chef/validation.pem" do
+  mode "0600"
+  content conf["validationCert"]
+end
 file "/etc/chef/first-boot.json" do
   mode "0644"
   content Hash.new("run_list" => ["role[#{conf["role"]}]"]).to_json
