@@ -1,7 +1,7 @@
 include_recipe "cloudformation"
 require 'json'
 
-if node['cloudformation'] 
+if node.attribute? 'cloudformation'
   if node["cloudformation"]["metadata"]["chef"]["serverURL"]
     # Chef client mode
     node.default["chef_client"]["server_url"] = node["cloudformation"]["metadata"]["chef"]["serverURL"]
