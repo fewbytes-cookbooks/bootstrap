@@ -29,7 +29,7 @@ hostsfile_entry node["ec2"]["public_ipv4"] do
   aliases [new_hostname]
   comment 'Append by bootstrap recipe'
 end
-hostsfile_entry node["ec2"]["private_ipv4"] do
+hostsfile_entry node["ec2"]["local_ipv4"] do
   hostname new_fqdn
   aliases [new_hostname]
   comment 'Append by bootstrap recipe'
