@@ -43,6 +43,6 @@ file "/etc/chef/validation.pem" do
 end
 file "/etc/chef/first-boot.json" do
   mode "0644"
-  content Hash["run_list" => ["role[#{conf["role"]}]"]].to_json
+  content Hash["run_list" => conf["run_list"] || ["role[#{conf["role"]}]"]].to_json
 end
 execute "chef-client -j /etc/chef/first-boot.json" 
