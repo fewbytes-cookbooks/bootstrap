@@ -16,7 +16,7 @@ if node['cloudformation']
 end
 
 new_hostname = "#{conf["role"]}-#{node["ec2"]["instance_id"]}"
-new_fqdn = "#{conf["environment"].tr("_", "-").downcase}.#{domain}"
+new_fqdn = "#{new_hostname}.#{conf["environment"].tr("_", "-").downcase}.#{domain}"
 
 file "/etc/hostname" do
   mode "0644"
