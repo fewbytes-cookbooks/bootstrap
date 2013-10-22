@@ -4,6 +4,10 @@ This file is used to list changes made in each version of bootstrap.
 
 ## 0.1.0:
 
+* Run chef-client from ruby, no need to use execute. Resolved issues with chef 11.x
+
+## 0.0.1:
+
 * Initial release of bootstrap
 
 - - - 

@@ -1,5 +1,4 @@
 include_recipe "cloudformation"
-require 'json'
 
 if node.attribute? 'cloudformation'
   if node["cloudformation"]["metadata"]["chef"]["serverURL"]
@@ -36,6 +35,7 @@ hostsfile_entry node["ec2"]["local_ipv4"] do
 end
 
 include_recipe "chef-client::config"
+json_attribs = Hash["run_list" => conf["run_list"] || ["role[#{conf["role"]}]"]]
 
 file "/etc/chef/validation.pem" do
   mode "0600"
@@ -43,6 +43,16 @@ file "/etc/chef/validation.pem" do
 end
 file "/etc/chef/first-boot.json" do
   mode "0644"
-  content Hash["run_list" => conf["run_list"] || ["role[#{conf["role"]}]"]].to_json
+  content Chef::JSONCompat.to_json(json_attribs)
 end
-execute "chef-client -j /etc/chef/first-boot.json | tee -a /var/log/chef/client.log | logger -t chef-client" 
+
+ruby_block "reload_client_config" do
+  block do
+    Chef::Config.from_file("#{node["chef_client"]["conf_dir"]}/client.rb")
+    Chef::Config[:solo] = false
+    Chef::Config[:client_fork] = true
+    chef_client = Chef::Client.new(json_attribs)
+    Chef::Log.warn "Starting chef-client run"
+    chef_client.run
+  end
+end
