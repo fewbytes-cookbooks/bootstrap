@@ -48,7 +48,7 @@ file "/etc/chef/first-boot.json" do
   action :create
 end
 
-ruby_block "reload_client_config" do
+ruby_block "Run chef-client" do
   block do
     Chef::Config.from_file("#{node["chef_client"]["conf_dir"]}/client.rb")
     Chef::Config[:solo] = false
