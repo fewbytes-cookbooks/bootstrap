@@ -51,6 +51,9 @@ ruby_block "reload_client_config" do
     Chef::Config.from_file("#{node["chef_client"]["conf_dir"]}/client.rb")
     Chef::Config[:solo] = false
     Chef::Config[:client_fork] = true
+    # chef-solo uses the same lockfile as chef-client: `file_cache_path/chef-client-running.pid
+    # change the lockfile of the inner chef-client run to avoid hanging
+    Chef::Config[:lockfile] = "/tmp/chef-client-first-run.pid"
     chef_client = Chef::Client.new(json_attribs)
     Chef::Log.warn "Starting chef-client run"
     chef_client.run
