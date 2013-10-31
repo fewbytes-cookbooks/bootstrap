@@ -6,12 +6,15 @@ if node.attribute? 'cloudformation'
     node.default["chef_client"]["config"]["chef_server_url"] = node["cloudformation"]["metadata"]["chef"]["serverURL"]
     node.default["chef_client"]["config"]["environment"] = node["cloudformation"]["metadata"]["chef"]["environment"]
     domain = node["cloudformation"]["metadata"]["generic"]["domain"]
-  else
-    # not implemented yet
-
   end
   conf = node["cloudformation"]["metadata"]["chef"]
   # normal instance bootstrap
+elsif node["ec2"].attribute? "tags" and node["ec2"]["tags"]["chef::serverURL"]
+  node.default["chef_client"]["config"]["serverURL"] = node["ec2"]["tags"]["chef::serverURL"]
+  node.default["chef_client"]["config"]["environment"] = node["ec2"]["tags"]["chef::environment"]
+  domain = node["ec2"]["tags"]["generic::domain"]
+else
+  raise RuntimeError, "Can't find boostrap data"
 end
 
 new_hostname = "#{conf["role"].tr("_", "-")}-#{node["ec2"]["instance_id"]}"
@@ -26,12 +29,12 @@ execute "hostname #{new_hostname}"
 hostsfile_entry node["ec2"]["public_ipv4"] do
   hostname new_fqdn
   aliases [new_hostname]
-  comment 'Append by bootstrap recipe'
+  comment 'Added by bootstrap recipe'
 end
 hostsfile_entry node["ec2"]["local_ipv4"] do
   hostname new_fqdn
   aliases [new_hostname]
-  comment 'Append by bootstrap recipe'
+  comment 'Added by bootstrap recipe'
 end
 
 include_recipe "chef-client::config"
@@ -51,8 +54,11 @@ end
 ruby_block "Run chef-client" do
   block do
     Chef::Config.from_file("#{node["chef_client"]["conf_dir"]}/client.rb")
+    Chef::Config[:file_cache_path] = node["chef_client"]["cache_path"]
+    Chef::Config[:file_backup_path] = node["chef_client"]["backup_path"]
     Chef::Config[:solo] = false
     Chef::Config[:client_fork] = true
+    Chef::Config[:node_name] = new_hostname
     # chef-solo uses the same lockfile as chef-client: `file_cache_path/chef-client-running.pid
     # change the lockfile of the inner chef-client run to avoid hanging
     Chef::Config[:lockfile] = "/tmp/chef-client-first-run.pid"
