@@ -3,8 +3,8 @@ include_recipe "cloudformation"
 if node.attribute? 'cloudformation'
   if node["cloudformation"]["metadata"]["chef"]["serverURL"]
     # Chef client mode
-    node.default["chef_client"]["server_url"] = node["cloudformation"]["metadata"]["chef"]["serverURL"]
-    node.default["chef_client"]["environment"] = node["cloudformation"]["metadata"]["chef"]["environment"]
+    node.default["chef_client"]["config"]["chef_server_url"] = node["cloudformation"]["metadata"]["chef"]["serverURL"]
+    node.default["chef_client"]["config"]["environment"] = node["cloudformation"]["metadata"]["chef"]["environment"]
     domain = node["cloudformation"]["metadata"]["generic"]["domain"]
   else
     # not implemented yet
