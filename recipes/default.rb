@@ -40,10 +40,12 @@ json_attribs = Hash["run_list" => conf["run_list"] || ["role[#{conf["role"]}]"]]
 file "/etc/chef/validation.pem" do
   mode "0600"
   content conf["validationCert"]
+  action :create
 end
 file "/etc/chef/first-boot.json" do
   mode "0644"
   content Chef::JSONCompat.to_json(json_attribs)
+  action :create
 end
 
 ruby_block "reload_client_config" do
